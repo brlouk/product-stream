@@ -1,0 +1,46 @@
+
+spring:
+  cloud:
+    stream:
+      kafka:
+        streams:
+          binder:
+            brokers:
+            - localhost:29092
+            configuration:
+                  default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                  default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                  commit.interval.ms: 1000
+      bindings:
+        priceStream-in-0:
+          destination: price
+        priceStream-in-1:
+          destination: product
+        priceStream-out-0:
+          destination: product-with-price
+        infoStream-in-0:
+          destination: product
+        infoStream-in-1:
+          destination: price
+        infoStream-out-0:
+          destination: product-with-price
+    function:
+      definition: priceStream,infoStream
+  elasticsearch:
+    rest:
+      uris:
+      - http://localhost:9200
+  kafka:
+    bootstrap-servers: localhost:29092   
+    consumer:
+      group-id: json
+      auto-offset-reset: earliest
+      fetch-max-wait: 1s
+      fetch-min-size: 1000
+      max-poll-records: 1000
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    listener:
+      type: batch
+        
